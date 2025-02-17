@@ -412,3 +412,57 @@ await agentTgWorker.runTask(task, {
 ## License
 
 This project is licensed under the MIT License.
+
+# Virtuals Game Node CLI
+
+A command-line interface for managing Virtuals Game Node operations and Lit Agent Wallet interactions.
+
+## Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Create a `.env` file with the following variables:
+```
+POLICY_ADDRESS=<address of VirtualsPolicy contract>
+LIT_AGENT_WALLET_ADDRESS=<address of LitAgentWallet contract>
+```
+
+3. Build the project:
+```bash
+npm run build
+```
+
+## Usage
+
+Start the CLI:
+```bash
+npm start
+```
+
+The CLI provides two main interfaces:
+
+### Admin Interface
+- Add Delegatee: Add a new delegatee address to the policy contract
+- Permit Tool: Allow a specific tool to be used
+- Set Tool Policy: Configure parameters for a tool
+- Check Status: View current policy settings
+
+### Delegatee Interface
+- Execute Transfer: Transfer tokens (ERC20 or native)
+- Execute Swap: Perform token swaps
+- Check Balance: View wallet balances
+
+## Networks
+
+The CLI supports the following networks:
+- Datil Dev (Testing)
+- Chronicle Yellowstone (Production)
+
+## Security
+
+- Never share your private key
+- Always verify transaction details before confirming
+- Use appropriate gas limits for your transactions

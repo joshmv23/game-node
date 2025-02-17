@@ -1,4 +1,5 @@
-import axios, { Axios } from "axios";
+import type { AxiosInstance } from "axios";
+import axios from "axios";
 import GameWorker from "./worker";
 import { ExecutableGameFunctionResponseJSON } from "./function";
 
@@ -39,7 +40,7 @@ export interface GameAction {
 }
 
 class GameClient {
-  public client: Axios | null = null;
+  public client: AxiosInstance | null = null;
   private runnerUrl = "https://game.virtuals.io";
 
   constructor(private apiKey: string) {}

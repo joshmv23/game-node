@@ -75,7 +75,7 @@ const telegramWorker = new GameWorker({
   functions: [generateImageFunction, replyMessageFunction],
 });
 
-const agent = new GameAgent("API_KEY", {
+const agent = new GameAgent("WYOnpyiusYuzDiPF4AkH", {
   name: "Telegram Agent",
   goal: "Interact with Telegram",
   description: "Telegram agent",

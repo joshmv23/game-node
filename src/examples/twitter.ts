@@ -103,7 +103,7 @@ const postTweetWorker = new GameWorker({
 });
 
 // Create an agent with the worker
-const agent = new GameAgent("API_KEY", {
+const agent = new GameAgent("WYOnpyiusYuzDiPF4AkH", {
   name: "Twitter Bot",
   goal: "Search and reply to tweets",
   description: "A bot that searches for tweets and replies to them",
