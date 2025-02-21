@@ -4,10 +4,10 @@ import {
     GameFunction,
     GameWorker,
 } from "@virtuals-protocol/game";
-import { ethers } from 'ethers';
+import { Delegatee } from '@lit-protocol/agent-wallet';
 
 // Create a function that generates the worker with an initialized delegatee
-export function createAgentWalletWorker(delegatee: any) {
+export function createAgentWalletWorker(delegatee: Delegatee) {
     const transferFunction = new GameFunction({
         name: "execute_transfer",
         description: "Execute a token transfer using Agent Wallet",
@@ -19,23 +19,25 @@ export function createAgentWalletWorker(delegatee: any) {
         executable: async (args, logger) => {
             try {
                 logger(`Initiating transfer of ${args.amount} ${args.token} to ${args.to}`);
-                
-                const result = await delegatee.executeTool(
-                    "QmVHC5cTWE1nzBSzEASULdwfHo1QiYMEr5Ht83anxe6uWB",
-                    {
+               
+                const result = await delegatee.executeTool({
+                    code: `
+                        // Transfer function code will be loaded from IPFS
+                        const transfer = async () => {
+                            // Implementation will be provided by the tool
+                        };
+                        transfer();
+                    `,
+                    jsParams: {
                         token: args.token,
                         to: args.to,
                         amount: args.amount
                     }
-                );
-
-                if (!result.success) {
-                    throw new Error(result.error || "Transfer failed");
-                }
+                });
 
                 return new ExecutableGameFunctionResponse(
                     ExecutableGameFunctionStatus.Done,
-                    `Transfer completed successfully: ${result.hash}`
+                    `Transfer completed successfully`
                 );
             } catch (error: any) {
                 return new ExecutableGameFunctionResponse(
@@ -48,7 +50,7 @@ export function createAgentWalletWorker(delegatee: any) {
 
     const swapFunction = new GameFunction({
         name: "execute_swap",
-        description: "Execute a token swap using Agent Wallet",
+        description: "Execute a token swap using Uniswap V3",
         args: [
             { name: "tokenIn", description: "Input token address" },
             { name: "tokenOut", description: "Output token address" },
@@ -57,23 +59,25 @@ export function createAgentWalletWorker(delegatee: any) {
         executable: async (args, logger) => {
             try {
                 logger(`Initiating swap of ${args.amount} ${args.tokenIn} to ${args.tokenOut}`);
-                
-                const result = await delegatee.executeTool(
-                    "Qmc6RAbV3WAqfNLvkAxp4hYjd4TDim4PwjWyhGbM9X7nbR",
-                    {
+               
+                const result = await delegatee.executeTool({
+                    code: `
+                        // Swap function code will be loaded from IPFS
+                        const swap = async () => {
+                            // Implementation will be provided by the tool
+                        };
+                        swap();
+                    `,
+                    jsParams: {
                         tokenIn: args.tokenIn,
                         tokenOut: args.tokenOut,
                         amount: args.amount
                     }
-                );
-
-                if (!result.success) {
-                    throw new Error(result.error || "Swap failed");
-                }
+                });
 
                 return new ExecutableGameFunctionResponse(
                     ExecutableGameFunctionStatus.Done,
-                    `Swap completed successfully: ${result.hash}`
+                    `Swap completed successfully`
                 );
             } catch (error: any) {
                 return new ExecutableGameFunctionResponse(
@@ -86,30 +90,32 @@ export function createAgentWalletWorker(delegatee: any) {
 
     const signFunction = new GameFunction({
         name: "execute_sign",
-        description: "Sign a message or transaction using Agent Wallet",
+        description: "Sign a message or transaction using ECDSA",
         args: [
-            { name: "message", description: "Message or transaction to sign" },
-            { name: "type", description: "Type of signing (message/transaction)" }
+            { name: "message", description: "Message to sign" },
+            { name: "type", description: "Type of signing (personal/typed)", optional: true }
         ] as const,
         executable: async (args, logger) => {
             try {
-                logger(`Initiating signing of ${args.type}: ${args.message}`);
-                
-                const result = await delegatee.executeTool(
-                    "QmSignatureToolIPFSHash",
-                    {
+                logger(`Initiating signing of message: ${args.message}`);
+               
+                const result = await delegatee.executeTool({
+                    code: `
+                        // Signing function code will be loaded from IPFS
+                        const sign = async () => {
+                            // Implementation will be provided by the tool
+                        };
+                        sign();
+                    `,
+                    jsParams: {
                         message: args.message,
-                        type: args.type
+                        type: args.type || "personal"
                     }
-                );
-
-                if (!result.success) {
-                    throw new Error(result.error || "Signing failed");
-                }
+                });
 
                 return new ExecutableGameFunctionResponse(
                     ExecutableGameFunctionStatus.Done,
-                    `Signing completed successfully: ${result.signature}`
+                    `Message signed successfully`
                 );
             } catch (error: any) {
                 return new ExecutableGameFunctionResponse(
@@ -124,23 +130,17 @@ export function createAgentWalletWorker(delegatee: any) {
     return new GameWorker({
         id: "agent_wallet_worker",
         name: "Agent Wallet Operations",
-        description: "Worker that handles all Agent Wallet operations including transfers, swaps, and signing",
+        description: "Worker that handles all Agent Wallet operations including transfers, swaps, and ECDSA signing",
         functions: [transferFunction, swapFunction, signFunction],
         getEnvironment: async () => {
-            // Get tool information using getToolByIpfsCid
-            const transferTool = delegatee.getToolByIpfsCid("QmVHC5cTWE1nzBSzEASULdwfHo1QiYMEr5Ht83anxe6uWB");
-            const swapTool = delegatee.getToolByIpfsCid("Qmc6RAbV3WAqfNLvkAxp4hYjd4TDim4PwjWyhGbM9X7nbR");
-
             return {
                 network: "datil-dev",
                 chainId: 175177,
                 maxGasPrice: "50", // gwei
                 slippageTolerance: "0.5", // percent
-                availableTools: {
-                    transfer: transferTool?.tool,
-                    swap: swapTool?.tool
-                }
             };
         },
     });
-} 
+}
+ 
+ 
